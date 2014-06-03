@@ -20,6 +20,7 @@ public class createGround : MonoBehaviour {
 	int lastRowNum = 0;
 	int firstRowNum = -1;
 	int ind = 0;
+	bool wasPrevAJunction = false;
 
 	Camera myCam;
 
@@ -143,36 +144,49 @@ public class createGround : MonoBehaviour {
 		bool isJunction = false;
 		firstRowNum++;
 
-		int rand = Random.Range(0,10);
-		// create a junction
-		if(rand < 3)
-		{
-			isJunction = true;
-			bool goLeft = false;
-			int rand2 = (int)Random.value;
-			if(rand2 %2 == 0 && xIndex < 4)
-			{
-				goLeft = true;
-			}
-			else
-			{
-				if(xIndex == 0)
-					goLeft = true;
-			}
 
-			// go left the tunnel
-			if(goLeft)
+		if(wasPrevAJunction == false)
+		{
+			int rand = Random.Range(0,10);
+			// create a junction
+			if(rand < 3)
 			{
-				Debug.Log("left");
-				junctIndex = xIndex+1;
-			}
-			// go right
-			else
-			{
-				Debug.Log("right");
-				junctIndex = xIndex -1;
+				wasPrevAJunction = true;
+				isJunction = true;
+				bool goLeft = false;
+				int rand2 = Random.Range(0,5);
+				Debug.Log("random: " + rand2);
+				if(rand2 > xIndex && xIndex < 4)
+				{
+					goLeft = true;
+
+				}
+				else
+				{
+					if(xIndex == 0)
+					{
+						goLeft = true;
+					}
+				}
+
+				// go left the tunnel
+				if(goLeft)
+				{
+
+					Debug.Log("left");
+					junctIndex = xIndex+1;
+				}
+				// go right
+				else
+				{
+
+					Debug.Log("right");
+					junctIndex = xIndex -1;
+				}
 			}
 		}
+		else
+			wasPrevAJunction = false;
 
 
 		for(int i =0; i < 5; i++)
@@ -227,7 +241,7 @@ public class createGround : MonoBehaviour {
 		MoveCamera ();
 		if(transform.position.z > lastZPos + sizeOfSquare)
 		{
-			lastZPos = transform.position.z;
+			lastZPos += sizeOfSquare;
 
 			DeleteLastRow();
 			GenerateNewRow();
