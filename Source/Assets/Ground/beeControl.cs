@@ -17,6 +17,7 @@ public class beeControl : MonoBehaviour {
 	beeGUI myBeeGui;
 
 	GameObject instruction;
+	float counter = 5;
 
 	void Start()
 	{
@@ -76,11 +77,23 @@ public class beeControl : MonoBehaviour {
 				isDead = false;
 			}
 
+
+
 		}
 
-
-
-#if UNITY_STANDALONE
+		// completely dead
+		if(myBeeGui.numLifes <= 0)
+		{
+			counter -= Time.deltaTime;
+			if(counter < 0)
+			{
+				transform.root.GetComponent<MainMenu>().displayMainMenu = true;
+			}
+			
+		}
+		
+		
+		#if UNITY_STANDALONE
 		if(Input.GetMouseButtonDown(0))
 		{
 			RaycastHit hit = new RaycastHit();
@@ -119,12 +132,15 @@ public class beeControl : MonoBehaviour {
 					Destroy(instruction);
 				}
 
-				RaycastHit hit = new RaycastHit();
-				Ray ray = myCam.ScreenPointToRay(touch.position);
-				if(Physics.Raycast(ray, out hit, 100))
+				if(myBeeGui.numLifes > 0)
 				{
-					moveToPos = new Vector3(hit.point.x, transform.position.y, transform.position.z);
-					transform.position = moveToPos;
+					RaycastHit hit = new RaycastHit();
+					Ray ray = myCam.ScreenPointToRay(touch.position);
+					if(Physics.Raycast(ray, out hit, 100))
+					{
+						moveToPos = new Vector3(hit.point.x, transform.position.y, transform.position.z);
+						transform.position = moveToPos;
+					}
 				}
 
 			}
