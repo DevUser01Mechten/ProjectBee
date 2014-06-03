@@ -11,23 +11,26 @@ public class beeGUI : MonoBehaviour {
 
 	int lableW;
 	int lableH;
+	public bool gameStarted = false;
 	void Start()
 	{
 		screenW = Screen.width;
 		screenH = Screen.height;
 
 		lableW = screenW / 8;
-		lableH = screenH / 10;
+		lableH = screenH / 15;
 		score = 0.0f;
 	}
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		score += (Time.deltaTime* 10);
+		if(gameStarted)
+			score += (Time.deltaTime* 10);
 	}
 
 	void OnGUI()
 	{
 		GUI.Label (new Rect (screenW - (lableW * 1.5f), lableH * 1.5f, lableW, lableH), "Score: " + (int)score, myStyle);
+		GUI.Label (new Rect (lableW * 1.5f, lableH * 1.5f, lableW, lableH), "Lives: " + numLifes, myStyle);
 	}
 }

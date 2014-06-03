@@ -21,7 +21,7 @@ public class createGround : MonoBehaviour {
 	int firstRowNum = -1;
 	int ind = 0;
 	bool wasPrevAJunction = false;
-
+	public bool startGame = false;
 	Camera myCam;
 
 	int[,] startSetup = new int[9,5] {{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0} };
@@ -236,9 +236,11 @@ public class createGround : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate ()
+	void Update ()
 	{
-		MoveCamera ();
+		if(startGame)
+			MoveCamera ();
+	
 		if(transform.position.z > lastZPos + sizeOfSquare)
 		{
 			lastZPos += sizeOfSquare;
@@ -247,19 +249,6 @@ public class createGround : MonoBehaviour {
 			GenerateNewRow();
 
 		}
-
-		/*for(int i=0; i < grounds.Count; i++)
-		{
-			if(grounds[i].transform.position.z < (-20-sizeOfSquare))
-			{
-
-				GameObject temp = (GameObject)Instantiate(grass, new Vector3(grounds[i].transform.position.x, 0, 14-sizeOfSquare), Quaternion.identity);
-				temp.transform.localScale = temp.transform.localScale * percentChange;
-				grounds.Add(temp);
-				GameObject.Destroy(grounds[i]);
-				grounds.RemoveAt(i);
-			}
-		}*/
 
 	}
 

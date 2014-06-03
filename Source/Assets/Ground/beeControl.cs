@@ -12,9 +12,16 @@ public class beeControl : MonoBehaviour {
 	bool isDead = false;
 	int blinkCount = 3;
 	float speedBlink = 0.1f;
+	bool gameStarted = false;
+
+	beeGUI myBeeGui;
+
+	GameObject instruction;
 
 	void Start()
 	{
+		instruction = transform.root.FindChild ("instruction").gameObject;
+		myBeeGui = transform.root.GetComponent<beeGUI> ();
 		for(int i =0; i < beeMaterials.Length; i++)
 		{
 			beeMaterials[i].SetColor("_Color", new Color(beeMaterials[i].color.r,beeMaterials[i].color.g,beeMaterials[i].color.b, 1));
@@ -87,11 +94,30 @@ public class beeControl : MonoBehaviour {
 #endif
 
 #if UNITY_STANDALONE_OSX || UNITY_IPHONE
+		if(Input.GetKeyDown(KeyCode.Space))
+		{
+			// start game
+			if(gameStarted == false)
+			{
+				transform.root.GetComponent<beeGUI>().gameStarted = true;
+				transform.root.GetComponent<createGround>().startGame = true;
+				Destroy(instruction);
+			}
+		}
+
+
 		for(int i=0; i < Input.touchCount; i++)
 		{
 			Touch touch = Input.GetTouch(i);
 			if(touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
 			{
+				// start game
+				if(gameStarted == false)
+				{
+					transform.root.GetComponent<beeGUI>().gameStarted = true;
+					transform.root.GetComponent<createGround>().startGame = true;
+					Destroy(instruction);
+				}
 				RaycastHit hit = new RaycastHit();
 				Ray ray = myCam.ScreenPointToRay(touch.position);
 				if(Physics.Raycast(ray, out hit, 100))
@@ -104,15 +130,25 @@ public class beeControl : MonoBehaviour {
 #endif
 	}
 
-	void KillBee()
+	void KillBee(GameObject obj)
 	{
 		if(isDead == false)
 		{
-			float PathXPos = transform.root.GetComponent<createGround> ().GetXPosForBee ();
-			transform.position = new Vector3 (PathXPos, transform.position.y, transform.position.z);
+			BlinkObj(obj);
 			isDead = true;
 			blinkOut = true;
 			blinkCount = 3;
+			myBeeGui.numLifes--;
+			if(myBeeGui.numLifes <=0)
+			{
+				myBeeGui.gameStarted = false;
+				transform.root.GetComponent<createGround>().startGame = false;
+			}
+			else
+			{
+				float PathXPos = transform.root.GetComponent<createGround> ().GetXPosForBee ();
+				transform.position = new Vector3 (PathXPos, transform.position.y, transform.position.z);
+			}
 		}
 		else
 		{
@@ -126,8 +162,15 @@ public class beeControl : MonoBehaviour {
 		if(obj.collider.tag != "path")
 		{
 			// collided with wall
-			KillBee();
-			Debug.Log("Hit Wall");
+			KillBee(obj.gameObject);
+
 		}
 	}
+
+	void BlinkObj(GameObject obj)
+	{
+		obj.GetComponent<blinkGround> ().enabled = true;
+		obj.GetComponent<blinkGround> ().StartBlink ();
+	}
+
 }
