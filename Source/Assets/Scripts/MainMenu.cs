@@ -12,6 +12,7 @@ public class MainMenu : MonoBehaviour
 	public static MainMenu Instance { get; private set;}
 	public bool displayMainMenu;
 	public bool displayGameOver;
+	public bool displayMainMenuPaused;
 	
 	private float screenWidth;
 	private float screenHeight;
@@ -19,6 +20,7 @@ public class MainMenu : MonoBehaviour
 	private float buttonHeight;
 	private List<GameCenterLeaderboard> _leaderboards;
 	private bool _hasLeaderboardData;
+	private bool displayExtraLives;
 	
 	
 	
@@ -31,6 +33,7 @@ public class MainMenu : MonoBehaviour
 		
 		displayMainMenu = false;
 		displayGameOver = false;
+		displayMainMenuPaused = false;
 		
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
@@ -39,9 +42,6 @@ public class MainMenu : MonoBehaviour
 		
 		//GameCenter startup
 		GameCenterManager.categoriesLoaded += GetLeaderBoards;
-				
-		// always authenticate at every launch
-		GameCenterBinding.authenticateLocalPlayer();
 		
 		//start iAd
 		AdBinding.createAdBanner(true);
@@ -83,23 +83,39 @@ public class MainMenu : MonoBehaviour
 			
 			GUI.DrawTexture (new Rect(screenWidth*0.2f,screenHeight*0.1f, screenWidth*0.6f, screenHeight*0.1f), gamelogo);
 			
-			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
+			if (displayMainMenuPaused == false)
 			{
-				displayMainMenu = false;
-				GetComponent<beeGUI>().dispMenu = true;
-				Time.timeScale = 1;
-				//Application.LoadLevel("game");
-				Debug.Log ("TRY BUTTON CLICKED!");
+				if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
+				{
+					displayMainMenu = false;
+					GetComponent<beeGUI>().dispMenu = true;
+					Time.timeScale = 1;
+					//Application.LoadLevel("game");
+					Debug.Log ("TRY BUTTON CLICKED!");
+				}
 			}
+			else
+			{
+				if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "RESUME GAME", customButtonStyle))
+				{
+					displayMainMenu = false;
+					GetComponent<beeGUI>().dispMenu = true;
+					Time.timeScale = 1;
+					//Application.LoadLevel("game");
+					Debug.Log ("TRY BUTTON CLICKED!");
+				}
+			}
+			
 			
 			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.4f, buttonWidth, buttonHeight), "LEADERBOARD", customButtonStyle))
 			{
+				GameCenterBinding.authenticateLocalPlayer();
 				GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
 			}
 			
 			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.5f, buttonWidth, buttonHeight), "EXTRA LIVES", customButtonStyle))
 			{
+				displayExtraLives = true;
 				Debug.Log ("EXTRA LIVES BUTTON CLICKED!");
 			}
 			
@@ -117,6 +133,36 @@ public class MainMenu : MonoBehaviour
 			{
 				Debug.Log ("MORE GAMES BUTTON CLICKED!");
 			}
+		}
+		
+		
+		//EXTRA LIVES
+		if (displayExtraLives)
+		{
+			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,screenWidth,screenHeight),mainMenuBackground,new Rect(0f,0f,5f,5f));
+			
+			GUI.DrawTexture (new Rect(screenWidth*0.2f,screenHeight*0.1f, screenWidth*0.6f, screenHeight*0.1f), gamelogo);
+			
+			GUI.Label(new Rect(0.5f,0.2f,screenWidth*0.5f, screenHeight*0.15f), "BUY EXTRA LIVES");
+			
+			GUI.Label(new Rect(0.5f,0.6f,screenWidth*0.5f, screenHeight*0.3f), "Survive longer each game by buying the extra lives option. This gives you 3 extra lives each go so you can grab those high scores!");
+			
+			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
+			{
+				Debug.Log ("REMOVE ADS BUTTON CLICKED!");
+			}
+			
+			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
+			{
+				Debug.Log ("REMOVE ADS BUTTON CLICKED!");
+			}
+			
+			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
+			{
+				Debug.Log ("REMOVE ADS BUTTON CLICKED!");
+			}
+			
+		
 		}
 		
 		
