@@ -23,17 +23,17 @@ public class createGround : MonoBehaviour {
 
 	Camera myCam;
 
-	int[,] startSetup = new int[7,5] {{1,1,1,1,1}, {1,1,1,1,1}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0} };
+	int[,] startSetup = new int[9,5] {{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0} };
 	void Awake()
 	{
 		myCam = this.camera;
-		startPos = new Vector3 (0, 0, -20);
+
 
 		Ray ray = myCam.ScreenPointToRay (new Vector3 (0, 0, 0));
 		Ray ray2 = myCam.ScreenPointToRay (new Vector3 (Screen.width, 0, 0));
 		screenWidth = ray2.origin.x - ray.origin.x;
 		sizeOfSquare = screenWidth / 5;
-		
+		startPos = new Vector3 (0, 0, (-sizeOfSquare*3));
 	}
 
 	// Use this for initialization
@@ -43,18 +43,25 @@ public class createGround : MonoBehaviour {
 		lastZPos = transform.position.z;
 	}
 
+	public float GetXPosForBee()
+	{
+		for(int i=0; i < grounds.Count; i++)
+		{
+			if(grounds[i].GetComponent<typeInfo>().row == lastRowNum+3 && grounds[i].GetComponent<typeInfo>().isPath == true)
+			{
+				return grounds[i].transform.position.x;
+			}
+		}
+
+		return -100;
+	}
+
 
 	void CreateStartGround()
 	{
 		originalSizeOfSquare = flower.GetComponent<MeshRenderer> ().bounds.size.x;
-		Debug.Log ("original size of sqare: " + originalSizeOfSquare);	
-	
-		
 		percentChange = (sizeOfSquare / originalSizeOfSquare);
-
-		Debug.Log ("percent: " + percentChange);
-
-		for(int r=0; r < 7; r++)
+		for(int r=0; r < 9; r++)
 		{
 			for(int c= 0; c < 5; c++)
 			{
@@ -138,7 +145,7 @@ public class createGround : MonoBehaviour {
 
 		int rand = Random.Range(0,10);
 		// create a junction
-		if(rand < 6)
+		if(rand < 3)
 		{
 			isJunction = true;
 			bool goLeft = false;
@@ -156,11 +163,13 @@ public class createGround : MonoBehaviour {
 			// go left the tunnel
 			if(goLeft)
 			{
+				Debug.Log("left");
 				junctIndex = xIndex+1;
 			}
 			// go right
 			else
 			{
+				Debug.Log("right");
 				junctIndex = xIndex -1;
 			}
 		}
