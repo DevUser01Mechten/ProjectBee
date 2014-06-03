@@ -12,7 +12,7 @@ public class beeGUI : MonoBehaviour {
 	int lableW;
 	int lableH;
 	public bool gameStarted = false;
-	bool dispMenu = true;
+	public bool dispMenu = true;
 
 
 	void Start()

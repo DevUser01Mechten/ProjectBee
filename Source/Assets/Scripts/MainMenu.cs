@@ -86,7 +86,10 @@ public class MainMenu : MonoBehaviour
 			
 			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
 			{
-				Application.LoadLevel("game");
+				displayMainMenu = false;
+				GetComponent<beeGUI>().dispMenu = true;
+				Time.timeScale = 1;
+				//Application.LoadLevel("game");
 				Debug.Log ("TRY BUTTON CLICKED!");
 			}
 			
