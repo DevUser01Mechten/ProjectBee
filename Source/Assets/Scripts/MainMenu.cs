@@ -16,7 +16,7 @@ public class MainMenu : MonoBehaviour
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
 		buttonWidth = screenWidth*0.5f;
-		buttonHeight = screenHeight*0.15f;
+		buttonHeight = screenHeight*0.08f;
 	}
 	
 	
@@ -29,12 +29,32 @@ public class MainMenu : MonoBehaviour
 		{
 			Debug.Log ("TRY BUTTON CLICKED!");
 		}
-	
-	
-		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.4f, buttonWidth, buttonHeight), "TRY AGAIN"))
+			
+		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.4f, buttonWidth, buttonHeight), "LEADERBOARD", customButtonStyle))
 		{
-			Debug.Log ("TRY BUTTON CLICKED!");
+			Debug.Log ("LEADERBOARD BUTTON CLICKED!");
 		}
+		
+		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.5f, buttonWidth, buttonHeight), "EXTRA LIVES", customButtonStyle))
+		{
+			Debug.Log ("EXTRA LIVES BUTTON CLICKED!");
+		}
+		
+		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
+		{
+			Debug.Log ("REMOVE ADS BUTTON CLICKED!");
+		}
+		
+		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.7f, buttonWidth, buttonHeight), "RATE", customButtonStyle))
+		{
+			Debug.Log ("RATE BUTTON CLICKED!");
+		}
+		
+		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.8f, buttonWidth, buttonHeight), "MORE GAMES", customButtonStyle))
+		{
+			Debug.Log ("MORE GAMES BUTTON CLICKED!");
+		}
+		
 	}
 	
 }
