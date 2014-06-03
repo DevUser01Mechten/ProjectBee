@@ -27,11 +27,7 @@ public class beeControl : MonoBehaviour {
 #endif
 
 #if UNITY_STANDALONE_OSX || UNITY_IPHONE
-<<<<<<< HEAD
-		if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
-=======
 		if(Input.touchCount > 0 )
->>>>>>> FETCH_HEAD
 		{
 			if(Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Moved)
 			{
