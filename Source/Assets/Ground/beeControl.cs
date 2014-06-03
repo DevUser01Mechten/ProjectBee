@@ -29,7 +29,7 @@ public class beeControl : MonoBehaviour {
 		myCam = transform.parent.camera;
 	}
 
-	void FixedUpdate()
+	void Update()
 	{
 		if(isDead)
 		{
@@ -118,12 +118,15 @@ public class beeControl : MonoBehaviour {
 					transform.root.GetComponent<createGround>().startGame = true;
 					Destroy(instruction);
 				}
-				RaycastHit hit = new RaycastHit();
-				Ray ray = myCam.ScreenPointToRay(touch.position);
-				if(Physics.Raycast(ray, out hit, 100))
+				else
 				{
-					moveToPos = new Vector3(hit.point.x, transform.position.y, transform.position.z);
-					transform.position = moveToPos;
+					RaycastHit hit = new RaycastHit();
+					Ray ray = myCam.ScreenPointToRay(touch.position);
+					if(Physics.Raycast(ray, out hit, 100))
+					{
+						moveToPos = new Vector3(hit.point.x, transform.position.y, transform.position.z);
+						transform.position = moveToPos;
+					}
 				}
 			}
 		}
@@ -143,7 +146,9 @@ public class beeControl : MonoBehaviour {
 			{
 				myBeeGui.gameStarted = false;
 				transform.root.GetComponent<createGround>().startGame = false;
+				transform.root.audio.Play();
 				GetComponent<Animation>().Play("Die");
+				GetComponent<Collider>().enabled = false;
 			}
 			else
 			{
