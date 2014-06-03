@@ -22,6 +22,8 @@ public class createGround : MonoBehaviour {
 	int ind = 0;
 
 	Camera myCam;
+
+	int[,] startSetup = new int[7,5] {{1,1,1,1,1}, {1,1,1,1,1}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0} };
 	void Awake()
 	{
 		myCam = this.camera;
@@ -56,14 +58,28 @@ public class createGround : MonoBehaviour {
 		{
 			for(int c= 0; c < 5; c++)
 			{
-				GameObject temp = (GameObject)Instantiate(grass, new Vector3(startPos.x-((c-(5/2))*sizeOfSquare), 0, startPos.z+(r*sizeOfSquare)), Quaternion.identity);
-				temp.transform.localScale = temp.transform.localScale * percentChange;
-				temp.GetComponent<typeInfo>().index = ind;
-				temp.GetComponent<typeInfo>().row = r;
-				temp.GetComponent<typeInfo>().col = c;
-				temp.GetComponent<typeInfo>().isPath = true;
-				grounds.Add(temp);
-				ind++;
+				if(startSetup[r,c] == 1)
+				{
+					GameObject temp = (GameObject)Instantiate(grass, new Vector3(startPos.x-((c-(5/2))*sizeOfSquare), 0, startPos.z+(r*sizeOfSquare)), Quaternion.identity);
+					temp.transform.localScale = temp.transform.localScale * percentChange;
+					temp.GetComponent<typeInfo>().index = ind;
+					temp.GetComponent<typeInfo>().row = r;
+					temp.GetComponent<typeInfo>().col = c;
+					temp.GetComponent<typeInfo>().isPath = true;
+					grounds.Add(temp);
+					ind++;
+				}
+				else
+				{
+					GameObject temp = (GameObject)Instantiate(flower, new Vector3(startPos.x-((c-(5/2))*sizeOfSquare), 0, startPos.z+(r*sizeOfSquare)), Quaternion.identity);
+					temp.transform.localScale = temp.transform.localScale * percentChange;
+					temp.GetComponent<typeInfo>().index = ind;
+					temp.GetComponent<typeInfo>().row = r;
+					temp.GetComponent<typeInfo>().col = c;
+					temp.GetComponent<typeInfo>().isPath = false;
+					grounds.Add(temp);
+					ind++;
+				}
 			}
 			firstRowNum++;
 		}
