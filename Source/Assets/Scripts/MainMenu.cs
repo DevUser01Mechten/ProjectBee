@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using Prime31;
 
 public class MainMenu : MonoBehaviour 
 {
@@ -10,6 +13,8 @@ public class MainMenu : MonoBehaviour
 	private float screenHeight;
 	private float buttonWidth;
 	private float buttonHeight;
+	private List<GameCenterLeaderboard> _leaderboards;
+	private bool _hasLeaderboardData;
 	
 	void Start()
 	{
@@ -17,7 +22,24 @@ public class MainMenu : MonoBehaviour
 		screenHeight = Screen.height;
 		buttonWidth = screenWidth*0.5f;
 		buttonHeight = screenHeight*0.08f;
+		
+		//GameCenter startup
+		GameCenterManager.categoriesLoaded += GetLeaderBoards;
+				
+		// always authenticate at every launch
+		GameCenterBinding.authenticateLocalPlayer();
 	}
+	
+	
+	void GetLeaderBoards(List<GameCenterLeaderboard> leaderboards)
+	{
+		_leaderboards = leaderboards;
+		_hasLeaderboardData = _leaderboards != null && _leaderboards.Count > 0;
+	}
+	
+	
+	
+	
 	
 	
 	void OnGUI()
