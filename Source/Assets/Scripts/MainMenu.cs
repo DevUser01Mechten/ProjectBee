@@ -31,7 +31,7 @@ public class MainMenu : MonoBehaviour
 		}
 	
 	
-		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.4f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
+		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.4f, buttonWidth, buttonHeight), "TRY AGAIN"))
 		{
 			Debug.Log ("TRY BUTTON CLICKED!");
 		}
