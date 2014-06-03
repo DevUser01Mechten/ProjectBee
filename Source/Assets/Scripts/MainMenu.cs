@@ -86,6 +86,7 @@ public class MainMenu : MonoBehaviour
 			
 			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
 			{
+				Application.LoadLevel("game");
 				Debug.Log ("TRY BUTTON CLICKED!");
 			}
 			

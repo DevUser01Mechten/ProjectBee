@@ -12,6 +12,7 @@ public class beeGUI : MonoBehaviour {
 	int lableW;
 	int lableH;
 	public bool gameStarted = false;
+	bool dispMenu = true;
 
 
 	void Start()
@@ -32,13 +33,17 @@ public class beeGUI : MonoBehaviour {
 
 	void OnGUI()
 	{
-		GUI.Label (new Rect (screenW - (lableW * 1.5f), lableH * 1.5f, lableW, lableH), "Score: " + (int)score, myStyle);
-		GUI.Label (new Rect (lableW * 1.5f, lableH * 1.5f, lableW, lableH), "Lives: " + numLifes, myStyle);
-		//menu
-		if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", myStyle))
+		if(dispMenu)
 		{
-			MainMenu.Instance.displayMainMenu = true;
-			Time.timeScale = 0.0000001f;
+			GUI.Label (new Rect (screenW - (lableW * 1.5f), lableH * 1.5f, lableW, lableH), "Score: " + (int)score, myStyle);
+			GUI.Label (new Rect (lableW * 1.5f, lableH * 1.5f, lableW, lableH), "Lives: " + numLifes, myStyle);
+			//menu
+			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", myStyle))
+			{
+				MainMenu.Instance.displayMainMenu = true;
+				Time.timeScale = 0.0000001f;
+				dispMenu = false;
+			}
 		}
 	}
 }
