@@ -118,16 +118,15 @@ public class beeControl : MonoBehaviour {
 					transform.root.GetComponent<createGround>().startGame = true;
 					Destroy(instruction);
 				}
-				else
+
+				RaycastHit hit = new RaycastHit();
+				Ray ray = myCam.ScreenPointToRay(touch.position);
+				if(Physics.Raycast(ray, out hit, 100))
 				{
-					RaycastHit hit = new RaycastHit();
-					Ray ray = myCam.ScreenPointToRay(touch.position);
-					if(Physics.Raycast(ray, out hit, 100))
-					{
-						moveToPos = new Vector3(hit.point.x, transform.position.y, transform.position.z);
-						transform.position = moveToPos;
-					}
+					moveToPos = new Vector3(hit.point.x, transform.position.y, transform.position.z);
+					transform.position = moveToPos;
 				}
+
 			}
 		}
 #endif
