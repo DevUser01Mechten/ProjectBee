@@ -3,13 +3,12 @@ using System.Collections;
 
 public class beeControl : MonoBehaviour {
 	Vector3 moveToPos;
-
 	Camera myCam;
-
 	public Material[] beeMaterials;
 	float transPVal = 1;
 	bool blinkOut = true;
 	bool isDead = false;
+	bool completelyDead = false;
 	int blinkCount = 3;
 	float speedBlink = 0.1f;
 	bool gameStarted = false;
@@ -18,7 +17,7 @@ public class beeControl : MonoBehaviour {
 
 	GameObject instruction;
 	float counter = 5;
-
+	
 	void Start()
 	{
 		instruction = transform.root.FindChild ("instruction").gameObject;
@@ -32,13 +31,16 @@ public class beeControl : MonoBehaviour {
 
 	void Update()
 	{
+
+		// When the bee collids with the wall it loses a life
 		if(isDead)
 		{
+			// count down the blinks
 			if(blinkCount > 0)
 			{
+				// blinking out
 				if(blinkOut)
 				{
-					//transPVal -= (speedBlink*Time.deltaTime);
 					transPVal = Mathf.Lerp(transPVal, 0, speedBlink);
 					if(transPVal < 0.05f)
 					{
@@ -52,6 +54,7 @@ public class beeControl : MonoBehaviour {
 
 					
 				}
+				// blinking in
 				else
 				{
 					//transPVal += (speedBlink*Time.deltaTime);
@@ -76,18 +79,19 @@ public class beeControl : MonoBehaviour {
 			{
 				isDead = false;
 			}
-
-
-
 		}
 
 		// completely dead
-		if(myBeeGui.numLifes <= 0)
+		if(myBeeGui.numLifes <= 0 && completelyDead == false)
 		{
 			counter -= Time.deltaTime;
 			if(counter < 0)
 			{
 				transform.root.GetComponent<MainMenu>().displayMainMenu = true;
+				transform.root.GetComponent<MainMenu>().displayMainMenuPaused = false;
+				transform.root.GetComponent<beeGUI>().dispMenu = false;
+				myBeeGui.SaveScore();
+				completelyDead = true;
 			}
 			
 		}
@@ -148,6 +152,7 @@ public class beeControl : MonoBehaviour {
 #endif
 	}
 
+	// when the bee hits the wall, this sets the variable
 	void KillBee(GameObject obj)
 	{
 		if(isDead == false)
@@ -178,6 +183,7 @@ public class beeControl : MonoBehaviour {
 		}
 	}
 
+	// collider to check if we hit the wall
 	void OnTriggerEnter(Collider obj)
 	{
 		if(obj.collider.tag != "path")
@@ -188,6 +194,7 @@ public class beeControl : MonoBehaviour {
 		}
 	}
 
+	// start the blinking
 	void BlinkObj(GameObject obj)
 	{
 		obj.GetComponent<blinkGround> ().enabled = true;

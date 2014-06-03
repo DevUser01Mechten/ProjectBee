@@ -14,7 +14,14 @@ public class beeGUI : MonoBehaviour {
 	int lableH;
 	public bool gameStarted = false;
 	public bool dispMenu = true;
-
+	int isExtra = 0;
+	
+	void Awake()
+	{
+		isExtra = EncryptedPlayerPrefs.GetInt("extraLives");
+		if(isExtra == 1)
+			numLifes = 4;
+	}
 
 	void Start()
 	{
@@ -46,5 +53,12 @@ public class beeGUI : MonoBehaviour {
 				dispMenu = false;
 			}
 		}
+	}
+
+	public void SaveScore()
+	{
+		int highS = EncryptedPlayerPrefs.GetInt("highScoore");
+		if(highS < score)
+			EncryptedPlayerPrefs.SetInt("highScoore", (int)score);
 	}
 }
