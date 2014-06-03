@@ -12,6 +12,8 @@ public class beeGUI : MonoBehaviour {
 	int lableW;
 	int lableH;
 	public bool gameStarted = false;
+
+
 	void Start()
 	{
 		screenW = Screen.width;
