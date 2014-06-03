@@ -27,7 +27,24 @@ public class beeControl : MonoBehaviour {
 #endif
 
 #if UNITY_STANDALONE_OSX || UNITY_IPHONE
-		if(Input.touchCount > 0 )
+		for(int i=0; i < Input.touchCount; i++)
+		{
+			Touch touch = Input.GetTouch(i);
+			if(touch.phase == TouchPhase.Began)
+			{
+				Debug.Log("touching");
+				RaycastHit hit = new RaycastHit();
+				Ray ray = myCam.ScreenPointToRay(touch.position);
+				if(Physics.Raycast(ray, out hit, 100))
+				{
+					Debug.Log("hit: " + hit.collider.name);
+					moveToPos = new Vector3(hit.point.x, transform.position.y, transform.position.z);
+					transform.position = moveToPos;
+				}
+			}
+		}
+
+	/*	if(Input.touchCount > 0 )
 		{
 			if(Input.GetTouch(0).phase == TouchPhase.Began || Input.GetTouch(0).phase == TouchPhase.Moved)
 			{
@@ -39,7 +56,7 @@ public class beeControl : MonoBehaviour {
 					transform.position = moveToPos;
 				}
 			}
-		}
+		}*/
 #endif
 	}
 

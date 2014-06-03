@@ -16,14 +16,27 @@ public class createGround : MonoBehaviour {
 	public float speed = 5;
 	Vector3 pos;
 	float lastZPos;
+	float screenWidth;
 	int lastRowNum = 0;
 	int firstRowNum = -1;
 	int ind = 0;
+
+	Camera myCam;
+	void Awake()
+	{
+		myCam = this.camera;
+		startPos = new Vector3 (0, 0, -20);
+
+		Ray ray = myCam.ScreenPointToRay (new Vector3 (0, 0, 0));
+		Ray ray2 = myCam.ScreenPointToRay (new Vector3 (Screen.width, 0, 0));
+		screenWidth = ray2.origin.x - ray.origin.x;
+		sizeOfSquare = screenWidth / 5;
+		
+	}
+
 	// Use this for initialization
 	void Start () {
 		grounds = new List<GameObject>();
-
-
 		CreateStartGround ();
 		lastZPos = transform.position.z;
 	}
@@ -31,12 +44,13 @@ public class createGround : MonoBehaviour {
 
 	void CreateStartGround()
 	{
-		startPos = new Vector3 (0, 0, -20);
-		sizeOfSquare = Screen.width / 5 / 10;
-		
 		originalSizeOfSquare = flower.GetComponent<MeshRenderer> ().bounds.size.x;
+		Debug.Log ("original size of sqare: " + originalSizeOfSquare);	
+	
 		
 		percentChange = (sizeOfSquare / originalSizeOfSquare);
+
+		Debug.Log ("percent: " + percentChange);
 
 		for(int r=0; r < 7; r++)
 		{
