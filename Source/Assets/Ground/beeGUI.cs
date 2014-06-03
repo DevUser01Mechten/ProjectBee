@@ -32,5 +32,11 @@ public class beeGUI : MonoBehaviour {
 	{
 		GUI.Label (new Rect (screenW - (lableW * 1.5f), lableH * 1.5f, lableW, lableH), "Score: " + (int)score, myStyle);
 		GUI.Label (new Rect (lableW * 1.5f, lableH * 1.5f, lableW, lableH), "Lives: " + numLifes, myStyle);
+		//menu
+		if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", myStyle))
+		{
+			MainMenu.Instance.displayMainMenu = true;
+			Time.timeScale = 0.0000001f;
+		}
 	}
 }

@@ -29,6 +29,9 @@ public class MainMenu : MonoBehaviour
 			Instance = this;
 		}
 		
+		displayMainMenu = false;
+		displayGameOver = false;
+		
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
 		buttonWidth = screenWidth*0.6f;
