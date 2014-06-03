@@ -7,6 +7,7 @@ using Prime31;
 public class MainMenu : MonoBehaviour 
 {
 	public Texture2D mainMenuBackground;
+	public Texture2D gamelogo;
 	public GUIStyle customButtonStyle;
 	
 	private float screenWidth;
@@ -16,11 +17,13 @@ public class MainMenu : MonoBehaviour
 	private List<GameCenterLeaderboard> _leaderboards;
 	private bool _hasLeaderboardData;
 	
+	
+	
 	void Start()
 	{
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
-		buttonWidth = screenWidth*0.5f;
+		buttonWidth = screenWidth*0.6f;
 		buttonHeight = screenHeight*0.08f;
 		
 		//GameCenter startup
@@ -28,6 +31,9 @@ public class MainMenu : MonoBehaviour
 				
 		// always authenticate at every launch
 		GameCenterBinding.authenticateLocalPlayer();
+		
+		//start iAd
+		AdBinding.createAdBanner(true);
 	}
 	
 	
@@ -43,18 +49,20 @@ public class MainMenu : MonoBehaviour
 	
 	
 	void OnGUI()
-	{
-		GUI.DrawTexture(new Rect(0f, 0f, screenWidth, screenHeight), mainMenuBackground, ScaleMode.ScaleToFit);
+	{		
+		GUI.DrawTextureWithTexCoords(new Rect(0f,0f,screenWidth,screenHeight),mainMenuBackground,new Rect(0f,0f,5f,5f));
+		
+		GUI.DrawTexture (new Rect(screenWidth*0.2f,screenHeight*0.1f, screenWidth*0.6f, screenHeight*0.1f), gamelogo);
 	
 	
-		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.2f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
+		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
 		{
 			Debug.Log ("TRY BUTTON CLICKED!");
 		}
 			
 		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.4f, buttonWidth, buttonHeight), "LEADERBOARD", customButtonStyle))
 		{
-			Debug.Log ("LEADERBOARD BUTTON CLICKED!");
+			GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
 		}
 		
 		if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.5f, buttonWidth, buttonHeight), "EXTRA LIVES", customButtonStyle))
