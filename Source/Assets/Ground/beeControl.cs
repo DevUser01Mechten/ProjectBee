@@ -97,7 +97,7 @@ public class beeControl : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.Space))
 		{
 			// start game
-			if(gameStarted == false)
+			if(gameStarted == false  && myBeeGui.numLifes > 0)
 			{
 				transform.root.GetComponent<beeGUI>().gameStarted = true;
 				transform.root.GetComponent<createGround>().startGame = true;
@@ -112,7 +112,7 @@ public class beeControl : MonoBehaviour {
 			if(touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
 			{
 				// start game
-				if(gameStarted == false)
+				if(gameStarted == false && myBeeGui.numLifes >0)
 				{
 					transform.root.GetComponent<beeGUI>().gameStarted = true;
 					transform.root.GetComponent<createGround>().startGame = true;
@@ -143,6 +143,7 @@ public class beeControl : MonoBehaviour {
 			{
 				myBeeGui.gameStarted = false;
 				transform.root.GetComponent<createGround>().startGame = false;
+				GetComponent<Animation>().Play("Die");
 			}
 			else
 			{
