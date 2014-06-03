@@ -9,6 +9,7 @@ public class MainMenu : MonoBehaviour
 	public Texture2D mainMenuBackground;
 	public Texture2D gamelogo;
 	public GUIStyle customButtonStyle;
+	public static MainMenu Instance { get; private set;}
 	
 	private float screenWidth;
 	private float screenHeight;
@@ -21,6 +22,11 @@ public class MainMenu : MonoBehaviour
 	
 	void Start()
 	{
+		if (Instance == null)
+		{
+			Instance = this;
+		}
+		
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
 		buttonWidth = screenWidth*0.6f;
@@ -34,6 +40,8 @@ public class MainMenu : MonoBehaviour
 		
 		//start iAd
 		AdBinding.createAdBanner(true);
+		
+		DontDestroyOnLoad (transform.gameObject);
 	}
 	
 	
