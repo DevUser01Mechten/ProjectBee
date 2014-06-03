@@ -27,7 +27,7 @@ public class beeControl : MonoBehaviour {
 #endif
 
 #if UNITY_STANDALONE_OSX || UNITY_IPHONE
-		if(Input.touchCount > 0 && Input.GetTouch(0))
+		if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
 		{
 			RaycastHit hit = new RaycastHit();
 			Ray ray = myCam.ScreenPointToRay(Input.GetTouch(0).position);
