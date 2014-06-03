@@ -46,7 +46,10 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Ground\beeControl.cs" />
      <Compile Include="Assets\Ground\createGround.cs" />
+     <Compile Include="Assets\Ground\groundMove.cs" />
+     <Compile Include="Assets\Ground\typeInfo.cs" />
      <Compile Include="Assets\Scripts\MainMenu.cs" />
  <Reference Include="Assets\Plugins\P31RestKit">
  <HintPath>Assets\Plugins\P31RestKit.dll</HintPath>

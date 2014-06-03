@@ -1,4 +1,5 @@
 ﻿<Properties>
+<<<<<<< HEAD
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MainMenu.cs">
     <Files>
@@ -6,6 +7,15 @@
       <File FileName="../../Documents/GoogleDrive/MACHTEN/Code/Bowling/Assets/Scripts/Menu/ButtonController.cs" Line="251" Column="13" />
       <File FileName="../../Documents/GoogleDrive/MACHTEN/Code/Bowling/Assets/Scripts/Menu/MenuManager.cs" Line="1" Column="1" />
       <File FileName="../../Documents/GoogleDrive/MACHTEN/Code/Bowling/Assets/Scripts/Menu/ShowTitleScreenButtons.cs" Line="1" Column="1" />
+=======
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Ground\beeCollision.cs">
+    <Files>
+      <File FileName="Assets\Ground\typeInfo.cs" Line="12" Column="1" />
+      <File FileName="Assets\Ground\createGround.cs" Line="219" Column="1" />
+      <File FileName="Assets\Ground\groundMove.cs" Line="1" Column="1" />
+      <File FileName="Assets\Ground\beeCollision.cs" Line="1" Column="1" />
+>>>>>>> FETCH_HEAD
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
