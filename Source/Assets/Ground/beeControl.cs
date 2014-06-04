@@ -8,7 +8,6 @@ public class beeControl : MonoBehaviour {
 	float transPVal = 1;
 	bool blinkOut = true;
 	bool isDead = false;
-	bool completelyDead = false;
 	int blinkCount = 3;
 	float speedBlink = 0.1f;
 	bool gameStarted = false;
@@ -83,25 +82,16 @@ public class beeControl : MonoBehaviour {
 		}
 
 		// completely dead
-<<<<<<< HEAD
 		if(myBeeGui.numLifes <= 0 && veryDead == false)
-=======
-		if(myBeeGui.numLifes <= 0 && completelyDead == false)
->>>>>>> FETCH_HEAD
+
 		{
 			counter -= Time.deltaTime;
 			if(counter < 0)
 			{
-<<<<<<< HEAD
 				veryDead = true;
 				MainMenu.Instance.displayMainMenu = true;
-=======
-				transform.root.GetComponent<MainMenu>().displayMainMenu = true;
-				transform.root.GetComponent<MainMenu>().displayMainMenuPaused = false;
 				transform.root.GetComponent<beeGUI>().dispMenu = false;
 				myBeeGui.SaveScore();
-				completelyDead = true;
->>>>>>> FETCH_HEAD
 			}
 			
 		}

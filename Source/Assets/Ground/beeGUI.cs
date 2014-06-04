@@ -32,12 +32,12 @@ public class beeGUI : MonoBehaviour {
 		lableH = screenH / 15;
 		score = 0.0f;
 		
-		if (EncryptedPlayerPrefs.CheckEncryption ("xtralives","int",1))
+		if (EncryptedPlayerPrefs.CheckEncryption ("xtralives","int","1"))
 		{
 			numLifes = 4;
 		}
 		
-		if (EncryptedPlayerPrefs.CheckEncryption ("10xtralives","int",1))
+		if (EncryptedPlayerPrefs.CheckEncryption ("10xtralives","int","1"))
 		{
 			numLifes = 11;
 		}
