@@ -59,6 +59,7 @@ public class beeGUI : MonoBehaviour {
 			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", myButtonStyle))
 			{
 				MainMenu.Instance.displayMainMenu = true;
+				MainMenu.Instance.displayMainMenuPaused = true;
 				Time.timeScale = 0.0000001f;
 				dispMenu = false;
 			}

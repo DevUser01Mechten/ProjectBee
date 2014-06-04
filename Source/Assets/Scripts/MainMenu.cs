@@ -125,7 +125,6 @@ public class MainMenu : MonoBehaviour
 					Camera.main.GetComponent<beeGUI>().dispMenu = true;
 					Time.timeScale = 1;
 					Application.LoadLevel("game");
-					Debug.Log ("TRY BUTTON CLICKED!");
 				}
 			}
 			else
@@ -133,9 +132,9 @@ public class MainMenu : MonoBehaviour
 				if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.3f, buttonWidth, buttonHeight), "RESUME GAME", customButtonStyle))
 				{
 					displayMainMenu = false;
+					displayMainMenuPaused = false;
 					Camera.main.GetComponent<beeGUI>().dispMenu = true;
 					Time.timeScale = 1;
-					Debug.Log ("TRY BUTTON CLICKED!");
 				}
 			}
 			

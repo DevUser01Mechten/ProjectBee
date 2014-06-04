@@ -89,7 +89,7 @@ public class beeControl : MonoBehaviour {
 			if(counter < 0)
 			{
 				veryDead = true;
-				MainMenu.Instance.displayMainMenu = true;
+				MainMenu.Instance.displayGameOver = true;
 				transform.root.GetComponent<beeGUI>().dispMenu = false;
 				myBeeGui.SaveScore();
 			}
