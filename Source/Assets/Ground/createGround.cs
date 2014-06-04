@@ -24,13 +24,13 @@ public class createGround : MonoBehaviour {
 	public bool startGame = false;
 	Camera myCam;
 
-	int[,] startSetup = new int[9,5] {{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0} };
+	int[,] startSetup = new int[10,5] {{1,1,1,1,1}, {1,1,1,1,1}, {1,1,1,1,1}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,1,1,1,0}, {0,0,1,0,0}, {0,0,1,0,0}, {0,0,1,0,0} };
 	void Awake()
 	{
 		myCam = this.camera;
 
 
-		Ray ray = myCam.ScreenPointToRay (new Vector3 (0, 0, 0));
+		Ray ray = myCam.ScreenPointToRay (new Vector3 (0, 0, -10));
 		Ray ray2 = myCam.ScreenPointToRay (new Vector3 (Screen.width, 0, 0));
 		screenWidth = ray2.origin.x - ray.origin.x;
 		sizeOfSquare = screenWidth / 5;
@@ -62,7 +62,7 @@ public class createGround : MonoBehaviour {
 	{
 		originalSizeOfSquare = flower.GetComponent<MeshRenderer> ().bounds.size.x;
 		percentChange = (sizeOfSquare / originalSizeOfSquare);
-		for(int r=0; r < 9; r++)
+		for(int r=0; r < 10; r++)
 		{
 			for(int c= 0; c < 5; c++)
 			{
