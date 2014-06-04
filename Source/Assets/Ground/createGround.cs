@@ -30,11 +30,11 @@ public class createGround : MonoBehaviour {
 		myCam = this.camera;
 
 
-		Ray ray = myCam.ScreenPointToRay (new Vector3 (0, 0, -10));
+		Ray ray = myCam.ScreenPointToRay (new Vector3 (0, 0, 0));
 		Ray ray2 = myCam.ScreenPointToRay (new Vector3 (Screen.width, 0, 0));
 		screenWidth = ray2.origin.x - ray.origin.x;
 		sizeOfSquare = screenWidth / 5;
-		startPos = new Vector3 (0, 0, (-sizeOfSquare*3));
+		startPos = new Vector3 (0, 0, (-sizeOfSquare*4));
 	}
 
 	// Use this for initialization
