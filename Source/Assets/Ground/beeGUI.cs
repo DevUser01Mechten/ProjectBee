@@ -5,6 +5,7 @@ public class beeGUI : MonoBehaviour {
 	public float score = 0.0f;
 	public int numLifes = 1;
 	public GUIStyle myStyle;
+	public GUIStyle myButtonStyle;
 
 	int screenW;
 	int screenH;
@@ -13,7 +14,14 @@ public class beeGUI : MonoBehaviour {
 	int lableH;
 	public bool gameStarted = false;
 	public bool dispMenu = true;
-
+	int isExtra = 0;
+	
+	void Awake()
+	{
+		isExtra = EncryptedPlayerPrefs.GetInt("extraLives");
+		if(isExtra == 1)
+			numLifes = 4;
+	}
 
 	void Start()
 	{
@@ -48,12 +56,19 @@ public class beeGUI : MonoBehaviour {
 			GUI.Label (new Rect (screenW - (lableW * 1.5f), lableH * 1.5f, lableW, lableH), "Score: " + (int)score, myStyle);
 			GUI.Label (new Rect (lableW * 1.5f, lableH * 1.5f, lableW, lableH), "Lives: " + numLifes, myStyle);
 			//menu
-			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", myStyle))
+			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", myButtonStyle))
 			{
 				MainMenu.Instance.displayMainMenu = true;
 				Time.timeScale = 0.0000001f;
 				dispMenu = false;
 			}
 		}
+	}
+
+	public void SaveScore()
+	{
+		int highS = EncryptedPlayerPrefs.GetInt("highScoore");
+		if(highS < score)
+			EncryptedPlayerPrefs.SetInt("highScoore", (int)score);
 	}
 }
