@@ -26,6 +26,19 @@ public class MainMenu : MonoBehaviour
 	private StoreKitController storeKitController;
 	private List<GameCenterLeaderboard> _leaderboards;
 	
+	void Awake()
+	{
+		//set up encrypted prefs
+		// this array should be filled before you can use EncryptedPlayerPrefs :
+		EncryptedPlayerPrefs.keys=new string[5];
+		EncryptedPlayerPrefs.keys[0]="2xzjgQLP";
+		EncryptedPlayerPrefs.keys[1]="GpgZzHrN";
+		EncryptedPlayerPrefs.keys[2]="K0SLeYel";
+		EncryptedPlayerPrefs.keys[3]="P2JBRziX";
+		EncryptedPlayerPrefs.keys[4]="LURkoNgv";
+	}
+	
+	
 	void Start()
 	{
 		if (Instance == null)
@@ -48,15 +61,6 @@ public class MainMenu : MonoBehaviour
 		
 		//Get in-app purchase product data
 		storeKitController.RequestProductData();
-		
-		//set up encrypted prefs
-		// this array should be filled before you can use EncryptedPlayerPrefs :
-		EncryptedPlayerPrefs.keys=new string[5];
-		EncryptedPlayerPrefs.keys[0]="2xzjgQLP";
-		EncryptedPlayerPrefs.keys[1]="GpgZzHrN";
-		EncryptedPlayerPrefs.keys[2]="K0SLeYel";
-		EncryptedPlayerPrefs.keys[3]="P2JBRziX";
-		EncryptedPlayerPrefs.keys[4]="LURkoNgv";
 		
 		//keep this object in memory
 		DontDestroyOnLoad (transform.gameObject);
