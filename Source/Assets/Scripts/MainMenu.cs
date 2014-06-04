@@ -6,23 +6,25 @@ using Prime31;
 
 public class MainMenu : MonoBehaviour 
 {
+	public static MainMenu Instance { get; private set;}
+	
 	public Texture2D mainMenuBackground;
 	public Texture2D gamelogo;
 	public GUIStyle customButtonStyle;
-	public static MainMenu Instance { get; private set;}
 	public bool displayMainMenu;
 	public bool displayGameOver;
 	public bool displayMainMenuPaused;
 	
-	private float screenWidth;
-	private float screenHeight;
+	private float sW;
+	private float sH;
 	private float buttonWidth;
 	private float buttonHeight;
-	private List<GameCenterLeaderboard> _leaderboards;
 	private bool _hasLeaderboardData;
 	private bool displayExtraLives;
-	
-	
+	private bool displayRemoveAds;
+	private bool displayProblem;
+	private StoreKitController storeKitController;
+	private List<GameCenterLeaderboard> _leaderboards;
 	
 	void Start()
 	{
@@ -35,16 +37,17 @@ public class MainMenu : MonoBehaviour
 		displayGameOver = false;
 		displayMainMenuPaused = false;
 		
-		screenWidth = Screen.width;
-		screenHeight = Screen.height;
-		buttonWidth = screenWidth*0.6f;
-		buttonHeight = screenHeight*0.08f;
-		
-		//GameCenter startup
-		GameCenterManager.categoriesLoaded += GetLeaderBoards;
+		sW = Screen.width;
+		sH = Screen.height;
+		buttonWidth = sW*0.6f;
+		buttonHeight = sH*0.08f;
+		storeKitController = GetComponent<StoreKitController>();
 		
 		//start iAd
 		AdBinding.createAdBanner(true);
+		
+		//Get in-app purchase product data
+		storeKitController.RequestProductData();
 		
 		//set up encrypted prefs
 		// this array should be filled before you can use EncryptedPlayerPrefs :
@@ -55,14 +58,34 @@ public class MainMenu : MonoBehaviour
 		EncryptedPlayerPrefs.keys[3]="P2JBRziX";
 		EncryptedPlayerPrefs.keys[4]="LURkoNgv";
 		
-		/*
-		EncryptedPlayerPrefs.SetString("test_string", "Hello World"
-		EncryptedPlayerPrefs.SetInt("test_int", 500);
-		EncryptedPlayerPrefs.SetFloat("test_float", 500.456);
-		*/
-		
 		//keep this object in memory
 		DontDestroyOnLoad (transform.gameObject);
+	}
+	
+	
+	void OnEnable()
+	{
+		//Storekit event handlers
+		GameCenterManager.categoriesLoaded += GetLeaderBoards;
+		StoreKitManager.purchaseSuccessfulEvent += SuccessfulPurchase;
+		StoreKitManager.purchaseFailedEvent += FailedPurchase;
+		StoreKitManager.purchaseCancelledEvent += FailedPurchase;
+		StoreKitManager.productListRequestFailedEvent += FailedPurchase;
+		StoreKitManager.restoreTransactionsFinishedEvent += SuccessfulRestore;
+		StoreKitManager.restoreTransactionsFailedEvent += FailedPurchase;
+	}
+	
+	
+	void OnDisable()
+	{
+		//must release event handler prior to object destruction, otherwise memory leaks
+		GameCenterManager.categoriesLoaded -= GetLeaderBoards;
+		StoreKitManager.purchaseSuccessfulEvent -= SuccessfulPurchase;
+		StoreKitManager.purchaseFailedEvent -= FailedPurchase;
+		StoreKitManager.purchaseCancelledEvent -= FailedPurchase;
+		StoreKitManager.productListRequestFailedEvent -= FailedPurchase;
+		StoreKitManager.restoreTransactionsFinishedEvent -= SuccessfulRestore;
+		StoreKitManager.restoreTransactionsFailedEvent -= FailedPurchase;
 	}
 	
 	
@@ -73,65 +96,79 @@ public class MainMenu : MonoBehaviour
 	}
 	
 	
-
+	void Update()
+	{
+		if (Time.frameCount%50==0)
+		{
+			Debug.Log ("displayMainMenu=" + displayMainMenu.ToString ()+"   displayExtraLives="+displayExtraLives.ToString ()+"   displayRemoveAds="+displayRemoveAds.ToString ()+"   displayGameOver="+displayGameOver.ToString()+"   displayMainMenuPaused="+displayMainMenuPaused.ToString());
+		}
+	}
+	
 	
 	void OnGUI()
-	{		
+	{	
+		//MAIN MENU
 		if (displayMainMenu)
 		{
-			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,screenWidth,screenHeight),mainMenuBackground,new Rect(0f,0f,5f,5f));
-			
-			GUI.DrawTexture (new Rect(screenWidth*0.2f,screenHeight*0.1f, screenWidth*0.6f, screenHeight*0.1f), gamelogo);
+			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,sW,sH),mainMenuBackground,new Rect(0f,0f,5f,5f));
+			GUI.DrawTexture (new Rect(sW*0.2f,sH*0.1f, sW*0.6f, sH*0.1f), gamelogo);
 			
 			if (displayMainMenuPaused == false)
 			{
-				if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
+				if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
 				{
 					displayMainMenu = false;
-					GetComponent<beeGUI>().dispMenu = true;
+					Camera.main.GetComponent<beeGUI>().dispMenu = true;
 					Time.timeScale = 1;
-					//Application.LoadLevel("game");
+					Application.LoadLevel("game");
 					Debug.Log ("TRY BUTTON CLICKED!");
 				}
 			}
 			else
 			{
-				if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.3f, buttonWidth, buttonHeight), "RESUME GAME", customButtonStyle))
+				if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.3f, buttonWidth, buttonHeight), "RESUME GAME", customButtonStyle))
 				{
 					displayMainMenu = false;
-					GetComponent<beeGUI>().dispMenu = true;
+					Camera.main.GetComponent<beeGUI>().dispMenu = true;
 					Time.timeScale = 1;
-					//Application.LoadLevel("game");
 					Debug.Log ("TRY BUTTON CLICKED!");
 				}
 			}
 			
 			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.4f, buttonWidth, buttonHeight), "LEADERBOARD", customButtonStyle))
+			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.4f, buttonWidth, buttonHeight), "LEADERBOARD", customButtonStyle))
 			{
-				GameCenterBinding.authenticateLocalPlayer();
-				GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
+				if (_hasLeaderboardData)
+				{
+					GameCenterBinding.authenticateLocalPlayer();
+					GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
+				}
 			}
 			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.5f, buttonWidth, buttonHeight), "EXTRA LIVES", customButtonStyle))
+			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.5f, buttonWidth, buttonHeight), "EXTRA LIVES", customButtonStyle))
 			{
 				displayExtraLives = true;
-				Debug.Log ("EXTRA LIVES BUTTON CLICKED!");
+				displayMainMenu = false;
+				displayGameOver = false;
 			}
 			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
-			{
-				Debug.Log ("REMOVE ADS BUTTON CLICKED!");
-			}
-			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.7f, buttonWidth, buttonHeight), "RATE", customButtonStyle))
+			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.6f, buttonWidth, buttonHeight), "RATE", customButtonStyle))
 			{
 				Debug.Log ("RATE BUTTON CLICKED!");
 			}
 			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.8f, buttonWidth, buttonHeight), "MORE GAMES", customButtonStyle))
+			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.7f, buttonWidth, buttonHeight), "MORE GAMES", customButtonStyle))
 			{
 				Debug.Log ("MORE GAMES BUTTON CLICKED!");
+			}
+			
+			if (EncryptedPlayerPrefs.GetInt ("removeadverts") != 1)
+			{
+				if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.8f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
+				{
+					displayRemoveAds = true;
+					displayMainMenu = false;
+				}
 			}
 		}
 		
@@ -139,34 +176,227 @@ public class MainMenu : MonoBehaviour
 		//EXTRA LIVES
 		if (displayExtraLives)
 		{
-			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,screenWidth,screenHeight),mainMenuBackground,new Rect(0f,0f,5f,5f));
+			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,sW,sH),mainMenuBackground,new Rect(0f,0f,5f,5f));
+			GUI.DrawTexture (new Rect(sW*0.2f,sH*0.1f, sW*0.6f, sH*0.1f), gamelogo);
 			
-			GUI.DrawTexture (new Rect(screenWidth*0.2f,screenHeight*0.1f, screenWidth*0.6f, screenHeight*0.1f), gamelogo);
 			
-			GUI.Label(new Rect(0.5f,0.2f,screenWidth*0.5f, screenHeight*0.15f), "BUY EXTRA LIVES");
-			
-			GUI.Label(new Rect(0.5f,0.6f,screenWidth*0.5f, screenHeight*0.3f), "Survive longer each game by buying the extra lives option. This gives you 3 extra lives each go so you can grab those high scores!");
-			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
+			if (EncryptedPlayerPrefs.GetInt("xtralives") != 1)
 			{
-				Debug.Log ("REMOVE ADS BUTTON CLICKED!");
+				GUI.Label(new Rect(sW*0.25f,sH*0.3f,sW*0.5f, sH*0.1f), "BUY EXTRA LIVES", customButtonStyle);	
+				GUI.Label(new Rect(sW*0.125f,sH*0.4f,sW*0.75f, sH*0.3f), "Survive longer each game by buying the extra lives option. This gives you 3 extra lives each go so you can grab those high scores!", customButtonStyle);
+				
+				if (GUI.Button(new Rect(sW*0.25f, sH*0.8f, buttonWidth*0.4f, buttonHeight*0.4f), "BUY 3 EXTRA LIVES", customButtonStyle))
+				{
+					BuyExtraLives ();
+				}
+				
+				if (GUI.Button(new Rect(sW*0.75f, sH*0.8f, buttonWidth*0.4f, buttonHeight*0.4f), "BUY 10 EXTRA LIVES", customButtonStyle))
+				{
+					Buy10ExtraLives ();
+				}
+				
+				if (GUI.Button(new Rect(sW*0.25f, sH*0.9f, buttonWidth*0.4f, buttonHeight*0.4f), "RESTORE", customButtonStyle))
+				{
+					RestoreButtonPressed ();
+				}
+				
+				if (GUI.Button(new Rect(sW*0.75f, sH*0.9f, buttonWidth*0.4f, buttonHeight*0.4f), "CANCEL", customButtonStyle))
+				{
+					CancelButtonPressed ();
+				}
 			}
-			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
+			else
 			{
-				Debug.Log ("REMOVE ADS BUTTON CLICKED!");
+				GUI.Label(new Rect(sW*0.25f,sH*0.4f,sW*0.5f, sH*0.2f), "You have already bought the extra lives option!");
+				
+				if (GUI.Button(new Rect((sW-buttonWidth*0.6f)/2, sH*0.5f, buttonWidth*0.6f, buttonHeight*0.6f), "BACK", customButtonStyle))
+				{
+					displayExtraLives = false;
+					displayMainMenu = true;
+				}
 			}
-			
-			if (GUI.Button(new Rect((screenWidth-buttonWidth)/2, screenHeight*0.6f, buttonWidth, buttonHeight), "REMOVE ADS", customButtonStyle))
-			{
-				Debug.Log ("REMOVE ADS BUTTON CLICKED!");
-			}
-			
-		
 		}
 		
 		
+		//GAME OVER
+		if (displayGameOver)
+		{
+			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,sW,sH),mainMenuBackground,new Rect(0f,0f,5f,5f));
+			GUI.DrawTexture (new Rect(sW*0.2f,sH*0.1f, sW*0.6f, sH*0.1f), gamelogo);
 		
+			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.5f, buttonWidth, buttonHeight), "BACK", customButtonStyle))
+			{
+				displayMainMenu = true;
+				displayGameOver = false;
+			}
+		}
+		
+		
+		//REMOVE ADS PURCHASE
+		if (displayRemoveAds)
+		{
+			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,sW,sH),mainMenuBackground,new Rect(0f,0f,5f,5f));
+			GUI.DrawTexture (new Rect(sW*0.2f,sH*0.1f, sW*0.6f, sH*0.1f), gamelogo);
+			
+			
+			if (EncryptedPlayerPrefs.GetInt("removeadverts") != 1)
+			{
+				GUI.Label(new Rect(0.25f,0.3f,sW*0.5f, sH*0.1f), "REMOVE ADVERTS");	
+				GUI.Label(new Rect(0.25f,0.4f,sW*0.5f, sH*0.4f), "Have and advert-free experience by purchasing this option");
+				
+				
+				if (GUI.Button(new Rect(sW*0.25f, sH*0.8f, buttonWidth*0.4f, buttonHeight*0.4f), "BUY REMOVE ADS", customButtonStyle))
+				{
+					BuyRemoveAds();
+				}
+				
+				if (GUI.Button(new Rect(sW*0.5f, sH*0.8f, buttonWidth*0.4f, buttonHeight*0.4f), "RESTORE", customButtonStyle))
+				{
+					RestoreButtonPressed ();
+				}
+				
+				if (GUI.Button(new Rect(sW*0.75f, sH*0.8f, buttonWidth*0.4f, buttonHeight*0.4f), "CANCEL", customButtonStyle))
+				{
+					CancelButtonPressed ();
+				}
+			}
+		}
+		
+		
+		//PROBLEM WITH IN-APP PURCHASE
+		if (displayProblem)
+		{
+			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,sW,sH),mainMenuBackground,new Rect(0f,0f,5f,5f));
+			GUI.DrawTexture (new Rect(sW*0.2f,sH*0.1f, sW*0.6f, sH*0.1f), gamelogo);
+			GUI.Label(new Rect(sW*0.25f,sH*0.4f,sW*0.5f, sH*0.2f), "Sorry, there appears to be a problem. Please can you try again later?");
+			
+			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.5f, buttonWidth, buttonHeight), "BACK", customButtonStyle))
+			{
+				displayMainMenu = true;
+				displayProblem = false;
+			}
+		}
+	}
+		
+
+	
+	// IN-APP PURCHASE LOGIC	
+	void RestoreButtonPressed()
+	{
+		storeKitController.Restore ();
+		displayMainMenu = true;
+		displayExtraLives = false;
+		displayRemoveAds = false;
 	}
 	
+	
+	void BuyExtraLives()
+	{
+		if (storeKitController.CanMakePayments ())
+		{
+			if (!storeKitController.PurchaseExtraLives ())
+			{
+				PurchaseNotCompleted();
+			}
+			else
+			{
+				displayMainMenu = true;
+				displayExtraLives = false;
+			}
+		}
+		else
+		{
+			PurchaseNotCompleted();
+		}
+	}
+	
+	
+	void Buy10ExtraLives()
+	{
+		if (storeKitController.CanMakePayments ())
+		{
+			if (!storeKitController.Purchase10ExtraLives ())
+			{
+				PurchaseNotCompleted();
+			}
+			else
+			{
+				displayMainMenu = true;
+				displayExtraLives = false;
+			}
+		}
+		else
+		{
+			PurchaseNotCompleted();
+		}
+	}
+	
+	
+	void BuyRemoveAds()
+	{
+		if (storeKitController.CanMakePayments ())
+		{
+			if (!storeKitController.PurchaseRemoveAds ())
+			{
+				PurchaseNotCompleted();
+			}
+			else
+			{
+				displayMainMenu = true;
+				displayRemoveAds = false;
+			}
+		}
+		else
+		{
+			PurchaseNotCompleted();
+		}
+	}
+	
+	
+	void CancelButtonPressed()
+	{
+		//Return
+		displayMainMenu = true;
+		displayExtraLives = false;
+		displayRemoveAds = false;
+	}
+	
+	
+	void PurchaseNotCompleted()
+	{
+		displayProblem = true;
+		displayMainMenu = false;
+		displayExtraLives = false;
+		displayRemoveAds = false;
+	}
+	
+	
+	//EVENTS
+	public void FailedPurchase(string error)
+	{
+		PurchaseNotCompleted();
+	}
+	
+	
+	public void SuccessfulPurchase(StoreKitTransaction transaction)
+	{
+		if (transaction.productIdentifier == "eu.machten.Bee.extralives")
+		{
+			EncryptedPlayerPrefs.SetInt ("xtralives",1);
+		}
+		else if (transaction.productIdentifier == "eu.machten.Bee.10extralives")
+		{
+			EncryptedPlayerPrefs.SetInt ("10xtralives",1);
+		}
+		else if (transaction.productIdentifier == "eu.machten.Bee.removeads")
+		{
+			EncryptedPlayerPrefs.SetInt ("removeadverts",1);
+		}
+	}
+	
+	
+	public void SuccessfulRestore()
+	{
+		//Do nothing, purchaseSuccessfulEvent will fire and be handled by separate method
+	}
 }

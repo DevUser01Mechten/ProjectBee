@@ -13,6 +13,7 @@ public class beeControl : MonoBehaviour {
 	int blinkCount = 3;
 	float speedBlink = 0.1f;
 	bool gameStarted = false;
+	bool veryDead = false;
 
 	beeGUI myBeeGui;
 
@@ -82,12 +83,13 @@ public class beeControl : MonoBehaviour {
 		}
 
 		// completely dead
-		if(myBeeGui.numLifes <= 0)
+		if(myBeeGui.numLifes <= 0 && veryDead == false)
 		{
 			counter -= Time.deltaTime;
 			if(counter < 0)
 			{
-				transform.root.GetComponent<MainMenu>().displayMainMenu = true;
+				veryDead = true;
+				MainMenu.Instance.displayMainMenu = true;
 			}
 			
 		}
