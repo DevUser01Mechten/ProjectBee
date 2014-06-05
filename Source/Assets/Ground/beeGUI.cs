@@ -29,7 +29,7 @@ public class beeGUI : MonoBehaviour {
 		screenH = Screen.height;
 
 		lableW = screenW / 8;
-		lableH = screenH / 15;
+		lableH = screenH / 20;
 		score = 0.0f;
 		
 		if (EncryptedPlayerPrefs.CheckEncryption ("xtralives","int","1"))
@@ -53,10 +53,10 @@ public class beeGUI : MonoBehaviour {
 	{
 		if(dispMenu)
 		{
-			GUI.Label (new Rect (screenW - (lableW * 1.5f), lableH * 1.5f, lableW, lableH), "Score: " + (int)score, myStyle);
-			GUI.Label (new Rect (lableW * 1.5f, lableH * 1.5f, lableW, lableH), "Lives: " + numLifes, myStyle);
+			GUI.Label (new Rect (screenW - (lableW * 3f), 0f, lableW*3f, lableH), "Score: " + (int)score, MainMenu.Instance.customHighlightStyle);
+			GUI.Label (new Rect (lableW, 0f, lableW*1.5f, lableH), "Lives: " + numLifes, MainMenu.Instance.customHighlightStyle);
 			//menu
-			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", myButtonStyle))
+			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", MainMenu.Instance.customButtonStyle))
 			{
 				MainMenu.Instance.displayMainMenu = true;
 				MainMenu.Instance.displayMainMenuPaused = true;
@@ -69,7 +69,13 @@ public class beeGUI : MonoBehaviour {
 	public void SaveScore()
 	{
 		int highS = EncryptedPlayerPrefs.GetInt("highScoore");
-		if(highS < score)
-			EncryptedPlayerPrefs.SetInt("highScoore", (int)score);
+		if (EncryptedPlayerPrefs.CheckEncryption ("highScoore","int",highS.ToString ()))
+		{
+			if(highS < score)
+			{
+				EncryptedPlayerPrefs.SetInt("highScoore", (int)score);
+				MainMenu.Instance.SetHighScore (highS);
+			}
+		}
 	}
 }

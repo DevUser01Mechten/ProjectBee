@@ -16,7 +16,7 @@ public class beeControl : MonoBehaviour {
 	beeGUI myBeeGui;
 
 	GameObject instruction;
-	float counter = 5;
+	float counter = 3;
 	
 	void Start()
 	{
@@ -126,7 +126,7 @@ public class beeControl : MonoBehaviour {
 		for(int i=0; i < Input.touchCount; i++)
 		{
 			Touch touch = Input.GetTouch(i);
-			if(touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved)
+			if((touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Moved) && touch.position.y < 650f)
 			{
 				// start game
 				if(gameStarted == false && myBeeGui.numLifes >0)
@@ -135,6 +135,9 @@ public class beeControl : MonoBehaviour {
 					transform.root.GetComponent<createGround>().startGame = true;
 					Destroy(instruction);
 				}
+				
+				Debug.Log("TOUCH=("+touch.position.x.ToString ()+","+touch.position.y.ToString ()+")");
+				
 
 				if(myBeeGui.numLifes > 0)
 				{
