@@ -46,7 +46,14 @@ public class beeGUI : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
 		if(gameStarted)
+		{
 			score += (Time.deltaTime* 10);
+			//make speed increase gradually
+			if ((int)score%100 == 0)
+			{
+				transform.root.GetComponent<createGround>().speed = 10f + (score * 0.01f);
+			}
+		}
 	}
 
 	void OnGUI()
@@ -56,10 +63,9 @@ public class beeGUI : MonoBehaviour {
 			GUI.Label (new Rect (screenW - (lableW * 3f), 0f, lableW*3f, lableH), "Score: " + (int)score, MainMenu.Instance.customHighlightStyle);
 			GUI.Label (new Rect (lableW, 0f, lableW*1.5f, lableH), "Lives: " + numLifes, MainMenu.Instance.customHighlightStyle);
 			//menu
-			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "MENU", MainMenu.Instance.customButtonStyle))
+			if (GUI.Button (new Rect (0f, 0f, lableW, lableH), "PAUSE", MainMenu.Instance.customButtonStyle))
 			{
 				MainMenu.Instance.displayMainMenu = true;
-				MainMenu.Instance.displayMainMenuPaused = true;
 				Time.timeScale = 0.0000001f;
 				dispMenu = false;
 			}
@@ -69,7 +75,7 @@ public class beeGUI : MonoBehaviour {
 	public void SaveScore()
 	{
 		int highS = EncryptedPlayerPrefs.GetInt("highScoore");
-		if (EncryptedPlayerPrefs.CheckEncryption ("highScoore","int",highS.ToString ()))
+		if (EncryptedPlayerPrefs.CheckEncryption ("highScoore","int",highS.ToString ()) || highS == 0)
 		{
 			if(highS < score)
 			{

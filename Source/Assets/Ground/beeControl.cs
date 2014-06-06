@@ -93,7 +93,7 @@ public class beeControl : MonoBehaviour {
 				transform.root.GetComponent<beeGUI>().dispMenu = false;
 				myBeeGui.SaveScore();
 			}
-			
+
 		}
 		
 		
@@ -135,9 +135,6 @@ public class beeControl : MonoBehaviour {
 					transform.root.GetComponent<createGround>().startGame = true;
 					Destroy(instruction);
 				}
-				
-				Debug.Log("TOUCH=("+touch.position.x.ToString ()+","+touch.position.y.ToString ()+")");
-				
 
 				if(myBeeGui.numLifes > 0)
 				{

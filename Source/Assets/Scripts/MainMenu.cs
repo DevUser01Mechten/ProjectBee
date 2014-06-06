@@ -27,7 +27,9 @@ public class MainMenu : MonoBehaviour
 	private bool displayProblem;
 	private StoreKitController storeKitController;
 	private List<GameCenterLeaderboard> _leaderboards;
-	private beeGUI bee;
+	private bool showAds;
+	private bool gameOver;
+	private bool isPad;
 	
 	void Awake()
 	{
@@ -58,10 +60,6 @@ public class MainMenu : MonoBehaviour
 		buttonWidth = sW*0.6f;
 		buttonHeight = sH/20.0f;
 		storeKitController = GetComponent<StoreKitController>();
-		bee = Camera.main.GetComponent<beeGUI>();
-		
-		//start iAd
-		AdBinding.createAdBanner(true);
 		
 		// always authenticate at every launch
 		GameCenterBinding.authenticateLocalPlayer();
@@ -70,8 +68,31 @@ public class MainMenu : MonoBehaviour
 		//Get in-app purchase product data
 		storeKitController.RequestProductData();
 		
-		//start loading ad
-		AdBinding.initializeInterstitial();
+		showAds = true;
+		int Ads = EncryptedPlayerPrefs.GetInt("removeadverts");
+		if (Ads == 1)
+		{
+			if (EncryptedPlayerPrefs.CheckEncryption ("removeadverts","int","1"))
+			{
+				showAds = false;
+			}
+		}
+		else
+		{
+			//start loading ad
+			AdBinding.initializeInterstitial();
+			//start iAd
+			AdBinding.createAdBanner(true);	
+		}
+		
+		// hack to detect iPad 3 until Unity adds official support
+		this.isPad = ( Screen.width >= 1536 || Screen.height >= 1536 );
+		if( isPad )
+		{
+			customButtonStyle.fontSize = 64;
+			customHighlightStyle.fontSize = 64;
+			customPaddedStyle.fontSize = 64;
+		}
 		
 		//keep this object in memory
 		DontDestroyOnLoad (transform.gameObject);
@@ -111,63 +132,36 @@ public class MainMenu : MonoBehaviour
 	}
 	
 	
-	
-	void Update()
-	{
-	/*
-		if (Time.frameCount%50==0)
-		{
-			//Debug.Log ("displayMainMenu=" + displayMainMenu.ToString ()+"   displayExtraLives="+displayExtraLives.ToString ()+"   displayRemoveAds="+displayRemoveAds.ToString ()+"   displayGameOver="+displayGameOver.ToString()+"   displayMainMenuPaused="+displayMainMenuPaused.ToString());
-			Debug.Log (_hasLeaderboardData.ToString ());
-			Debug.Log("Leaderboards count="+ _leaderboards.Count);
-		}
-	*/
-	}
-	
-	
-	
 	void OnGUI()
 	{	
-		//MAIN MENU
+		//PAUSE MENU
 		if (displayMainMenu)
 		{
+			gameOver = false;
 			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,sW,sH),mainMenuBackground,new Rect(0f,0f,5f,5f));
 			GUI.DrawTexture (new Rect(sW*0.2f,sH*0.1f, sW*0.6f, sH*0.1f), gamelogo);
 			
-			if (displayMainMenuPaused == false)
+			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.3f, buttonWidth, buttonHeight), "RESUME GAME", customHighlightStyle))
 			{
-				if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.3f, buttonWidth, buttonHeight), "TRY AGAIN", customButtonStyle))
-				{
-					//show intersitial ad
-					if (AdBinding.isInterstitalLoaded())
-					{
-						AdBinding.showInterstitial ();
-						AdBinding.initializeInterstitial();
-					}
-					displayMainMenu = false;
-					Camera.main.GetComponent<beeGUI>().dispMenu = true;
-					Time.timeScale = 1;
-					Application.LoadLevel("game");
-					bee = Camera.main.GetComponent<beeGUI>();
-				}
+				displayMainMenu = false;
+				displayMainMenuPaused = false;
+				Camera.main.GetComponent<beeGUI>().dispMenu = true;
+				Time.timeScale = 1;
 			}
-			else
-			{
-				if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.3f, buttonWidth, buttonHeight), "RESUME GAME", customHighlightStyle))
-				{
-					displayMainMenu = false;
-					displayMainMenuPaused = false;
-					Camera.main.GetComponent<beeGUI>().dispMenu = true;
-					Time.timeScale = 1;
-				}
-			}
-			
 			
 			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.4f, buttonWidth, buttonHeight), "LEADERBOARD", customButtonStyle))
 			{
-				if (_hasLeaderboardData)
+				if (GameCenterBinding.isPlayerAuthenticated())
 				{
-					GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
+					if (_hasLeaderboardData)
+					{
+						GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
+					}
+				}
+				else
+				{
+					GameCenterBinding.authenticateLocalPlayer();
+					GameCenterBinding.loadLeaderboardTitles();
 				}
 			}
 			
@@ -217,27 +211,27 @@ public class MainMenu : MonoBehaviour
 			GUI.DrawTexture (rRect(0.2f,0.1f,0.6f,0.1f), gamelogo);
 			
 			
-			if (EncryptedPlayerPrefs.GetInt("xtralives") != 1)
+			if (EncryptedPlayerPrefs.GetInt("10xtralives") != 1)
 			{
 				GUI.Label(rRect(0.25f,0.3f,0.5f,0.05f), "BUY EXTRA LIVES", customHighlightStyle);	
-				GUI.Label(rRect(0.125f,0.4f,0.75f,0.25f), "Survive longer each game by buying an extra life option. This gives you an extra 3 or a whopping 10 extra lives each go!", customPaddedStyle);
+				GUI.Label(rRect(0.125f,0.35f,0.75f,0.25f), "Survive longer each game by buying extra life options. You can buy an extra 3 or a whopping 10 extra lives!", customPaddedStyle);
 				
-				if (GUI.Button(rRect(0.125f,0.7f,0.375f,0.05f), "BUY 3 EXTRA LIVES", customHighlightStyle))
+				if (GUI.Button(rRect(0.125f,0.6f,0.375f,0.05f), "3 EXTRA LIVES", customHighlightStyle))
 				{
 					BuyExtraLives ();
 				}
 				
-				if (GUI.Button(rRect(0.5f,0.7f,0.375f,0.05f), "BUY 10 EXTRA LIVES", customHighlightStyle))
-				{
-					Buy10ExtraLives ();
-				}
-				
-				if (GUI.Button(rRect(0.125f,0.78f,0.375f,0.05f), "RESTORE", customHighlightStyle))
+				if (GUI.Button(rRect(0.5f,0.6f,0.375f,0.05f), "RESTORE", customHighlightStyle))
 				{
 					RestoreButtonPressed ();
 				}
 				
-				if (GUI.Button(rRect(0.5f,0.78f,0.375f,0.05f), "CANCEL", customHighlightStyle))
+				if (GUI.Button(rRect(0.125f,0.65f,0.375f,0.05f), "10 EXTRA LIVES", customHighlightStyle))
+				{
+					Buy10ExtraLives ();
+				}
+				
+				if (GUI.Button(rRect(0.5f,0.65f,0.375f,0.05f), "CANCEL", customHighlightStyle))
 				{
 					CancelButtonPressed ();
 				}
@@ -248,34 +242,83 @@ public class MainMenu : MonoBehaviour
 		//GAME OVER
 		if (displayGameOver)
 		{
+			gameOver = true;
+			
+			if (showAds && AdBinding.isInterstitalLoaded())
+			{
+				AdBinding.destroyAdBanner();
+				AdBinding.showInterstitial ();
+			}
+			
 			GUI.DrawTextureWithTexCoords(rRect(0f,0f,1f,1f),mainMenuBackground,new Rect(0f,0f,5f,5f));
 			GUI.DrawTexture (rRect(0.2f,0.1f,0.6f,0.1f), gamelogo);
 		
-			GUI.Label (rRect(0.3f,0.35f,0.4f,0.05f),"GAME OVER", customHighlightStyle);
-			GUI.Label (rRect(0.3f,0.4f,0.4f,0.05f),"SCORE", customButtonStyle);
-			GUI.Label (rRect(0.3f,0.45f,0.4f,0.05f), ((int)Camera.main.GetComponent<beeGUI>().score).ToString (), customButtonStyle);
-			GUI.Label (rRect(0.3f,0.5f,0.4f,0.05f),"HIGH", customButtonStyle);
-			GUI.Label (rRect(0.3f,0.55f,0.4f,0.05f),EncryptedPlayerPrefs.GetInt ("highScoore").ToString (), customButtonStyle);
-		
-			if (GUI.Button(rRect(0.3f,0.65f,0.4f,0.05f), "RATE", customHighlightStyle))
+			GUI.Label (rRect(0.3f,0.25f,0.4f,0.05f),"GAME OVER", customHighlightStyle);
+			GUI.Label (rRect(0.3f,0.3f,0.4f,0.05f),"SCORE", customButtonStyle);
+			GUI.Label (rRect(0.3f,0.35f,0.4f,0.05f), ((int)Camera.main.GetComponent<beeGUI>().score).ToString (), customButtonStyle);
+			GUI.Label (rRect(0.3f,0.4f,0.4f,0.05f),"HIGH", customButtonStyle);
+			GUI.Label (rRect(0.3f,0.45f,0.4f,0.05f),EncryptedPlayerPrefs.GetInt ("highScoore").ToString (), customButtonStyle);
+			
+			if (GUI.Button(rRect(0.3f,0.52f,0.4f,0.05f), "RATE", customHighlightStyle))
 			{
 				Application.OpenURL ("itms-apps://itunes.apple.com/app/id875911453");
 			}
 			
-			if (GUI.Button(rRect(0.3f,0.72f,0.4f,0.05f), "LEADERBOARD", customHighlightStyle))
+			if (GUI.Button(rRect(0.3f,0.59f,0.4f,0.05f), "LEADERBOARD", customHighlightStyle))
 			{
-				if (_hasLeaderboardData)
+				if (GameCenterBinding.isPlayerAuthenticated())
 				{
-					GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
+					if (_hasLeaderboardData)
+					{
+						GameCenterBinding.showGameCenterViewController( GameCenterViewControllerState.Leaderboards );
+					}
+				}
+				else
+				{
+					GameCenterBinding.authenticateLocalPlayer();
+					GameCenterBinding.loadLeaderboardTitles();
 				}
 			}
 			
-			if (GUI.Button(rRect(0.3f,0.79f,0.4f,0.05f), "TRY AGAIN", customHighlightStyle))
+			float yoffset = 0f;
+			
+			if (EncryptedPlayerPrefs.GetInt ("10xtralives") != 1)
+			{
+				if (GUI.Button(rRect(0.3f,0.66f,0.4f,0.05f), "EXTRA LIVES", customHighlightStyle))
+				{
+					displayExtraLives = true;
+					displayGameOver = false;
+				}
+			}
+			else
+			{
+				yoffset -= 0.07f;
+			}
+			
+			if (showAds == true)
+			{
+				if (GUI.Button(rRect(0.3f,0.73f+yoffset,0.4f,0.05f), "REMOVE ADS", customHighlightStyle))
+				{
+					displayRemoveAds = true;
+					displayGameOver = false;
+				}
+			}
+			else
+			{
+				yoffset -= 0.07f;
+			}
+			
+			if (GUI.Button(rRect(0.3f,0.80f+yoffset,0.4f,0.05f), "TRY AGAIN", customHighlightStyle))
 			{
 				displayMainMenu = false;
 				displayGameOver = false;
 				Camera.main.GetComponent<beeGUI>().dispMenu = true;
 				Time.timeScale = 1;
+				if (showAds)
+				{
+					AdBinding.createAdBanner(true);
+					AdBinding.initializeInterstitial();
+				}
 				Application.LoadLevel("game");
 			}
 		}
@@ -291,20 +334,20 @@ public class MainMenu : MonoBehaviour
 			if (EncryptedPlayerPrefs.GetInt("removeadverts") != 1)
 			{
 				GUI.Label(rRect(0.25f,0.3f,0.5f, 0.05f), "REMOVE ADVERTS", customHighlightStyle);	
-				GUI.Label(rRect(0.125f,0.4f,0.75f,0.25f), "Have and advert-free experience by purchasing the option below. Then experience uninterrupted gameplay!",customPaddedStyle);
+				GUI.Label(rRect(0.125f,0.35f,0.75f,0.25f), "Have and advert-free experience by purchasing the option below. Then experience uninterrupted gameplay!",customPaddedStyle);
 				
 				
-				if (GUI.Button(rRect(0.125f, 0.7f, 0.25f, 0.05f), "REMOVE ADS", customHighlightStyle))
+				if (GUI.Button(rRect(0.125f, 0.6f, 0.25f, 0.05f), "NO ADS!", customHighlightStyle))
 				{
 					BuyRemoveAds();
 				}
 				
-				if (GUI.Button(rRect(0.375f, 0.7f, 0.25f, 0.05f), "RESTORE", customHighlightStyle))
+				if (GUI.Button(rRect(0.375f, 0.6f, 0.25f, 0.05f), "RESTORE", customHighlightStyle))
 				{
 					RestoreButtonPressed ();
 				}
 				
-				if (GUI.Button(rRect(0.625f, 0.7f, 0.25f, 0.05f), "CANCEL", customHighlightStyle))
+				if (GUI.Button(rRect(0.625f, 0.6f, 0.25f, 0.05f), "CANCEL", customHighlightStyle))
 				{
 					CancelButtonPressed ();
 				}
@@ -317,11 +360,21 @@ public class MainMenu : MonoBehaviour
 		{
 			GUI.DrawTextureWithTexCoords(new Rect(0f,0f,sW,sH),mainMenuBackground,new Rect(0f,0f,5f,5f));
 			GUI.DrawTexture (new Rect(sW*0.2f,sH*0.1f, sW*0.6f, sH*0.1f), gamelogo);
-			GUI.Label(new Rect(sW*0.25f,sH*0.4f,sW*0.5f, sH*0.2f), "Sorry, there appears to be a problem. Please can you try again later?");
 			
-			if (GUI.Button(new Rect((sW-buttonWidth)/2, sH*0.5f, buttonWidth, buttonHeight), "BACK", customButtonStyle))
+			GUI.Label(rRect(0.25f,0.3f,0.5f, 0.05f), "PROBLEM", customHighlightStyle);	
+			GUI.Label(rRect(0.125f,0.35f,0.75f,0.25f), "There appears to be a problem in doing that action. Please can you try again later?",customPaddedStyle);
+			
+			
+			if (GUI.Button(rRect(0.375f, 0.6f, 0.25f, 0.05f), "HOME", customHighlightStyle))
 			{
-				displayMainMenu = true;
+				if (gameOver)
+				{
+					displayGameOver = true;
+				}
+				else
+				{
+					displayMainMenu = true;
+				}
 				displayProblem = false;
 			}
 		}
@@ -338,6 +391,7 @@ public class MainMenu : MonoBehaviour
 	{
 		if (_hasLeaderboardData)
 		{
+			Debug.Log ("SUBMITTING HIGH SCORE TO LEADERBOARD:" + _leaderboards[0].leaderboardId.ToString ());
 			GameCenterBinding.reportScore(highScore, _leaderboards[0].leaderboardId );
 		}
 	}
@@ -347,7 +401,14 @@ public class MainMenu : MonoBehaviour
 	void RestoreButtonPressed()
 	{
 		storeKitController.Restore ();
-		displayMainMenu = true;
+		if (gameOver)
+		{
+			displayGameOver = true;
+		}
+		else
+		{
+			displayMainMenu = true;
+		}
 		displayExtraLives = false;
 		displayRemoveAds = false;
 	}
@@ -363,7 +424,14 @@ public class MainMenu : MonoBehaviour
 			}
 			else
 			{
-				displayMainMenu = true;
+				if (gameOver)
+				{
+					displayGameOver = true;
+				}
+				else
+				{
+					displayMainMenu = true;
+				}
 				displayExtraLives = false;
 			}
 		}
@@ -384,7 +452,14 @@ public class MainMenu : MonoBehaviour
 			}
 			else
 			{
-				displayMainMenu = true;
+				if (gameOver)
+				{
+					displayGameOver = true;
+				}
+				else
+				{
+					displayMainMenu = true;
+				}
 				displayExtraLives = false;
 			}
 		}
@@ -405,7 +480,14 @@ public class MainMenu : MonoBehaviour
 			}
 			else
 			{
-				displayMainMenu = true;
+				if (gameOver)
+				{
+					displayGameOver = true;
+				}
+				else
+				{
+					displayMainMenu = true;
+				}
 				displayRemoveAds = false;
 			}
 		}
@@ -419,7 +501,14 @@ public class MainMenu : MonoBehaviour
 	void CancelButtonPressed()
 	{
 		//Return
-		displayMainMenu = true;
+		if (gameOver)
+		{
+			displayGameOver = true;
+		}
+		else
+		{
+			displayMainMenu = true;
+		}
 		displayExtraLives = false;
 		displayRemoveAds = false;
 	}
@@ -429,6 +518,7 @@ public class MainMenu : MonoBehaviour
 	{
 		displayProblem = true;
 		displayMainMenu = false;
+		displayGameOver = false;
 		displayExtraLives = false;
 		displayRemoveAds = false;
 	}
@@ -454,6 +544,8 @@ public class MainMenu : MonoBehaviour
 		else if (transaction.productIdentifier == "eu.machten.Bee.removeads")
 		{
 			EncryptedPlayerPrefs.SetInt ("removeadverts",1);
+			showAds = false;
+			AdBinding.destroyAdBanner ();
 		}
 	}
 	

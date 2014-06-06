@@ -55,9 +55,6 @@
      <Compile Include="Assets\Scripts\EncryptedPlayerPrefs.cs" />
      <Compile Include="Assets\Scripts\MainMenu.cs" />
      <Compile Include="Assets\Scripts\StoreKitController.cs" />
-     <None Include="Assets\Editor\Tapjoy\SDK\TapjoyResources.bundle\revision.txt" />
-     <None Include="Assets\Editor\Tapjoy\SDK\TapjoyResources.bundle\WebViewJavascriptBridge.js.txt" />
-     <None Include="Assets\Editor\Tapjoy\SDK\TapjoyResources.bundle\mraid.js.txt" />
  <Reference Include="Assets\Plugins\P31RestKit">
  <HintPath>Assets\Plugins\P31RestKit.dll</HintPath>
  </Reference>

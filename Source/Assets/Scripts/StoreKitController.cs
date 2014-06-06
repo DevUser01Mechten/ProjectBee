@@ -39,9 +39,8 @@ public class StoreKitController : MonoBehaviourGUI
 	{
 		if( _products != null && _products.Count > 0 )
 		{
-			var product = _products[0];
-			Debug.Log( "preparing to purchase product: " + product.productIdentifier );
-			StoreKitBinding.purchaseProduct( product.productIdentifier, 1 );
+			Debug.Log( "preparing to purchase product: eu.machten.Bee.extralives" );
+			StoreKitBinding.purchaseProduct("eu.machten.Bee.extralives", 1 );
 			return true;
 		}
 		else
@@ -55,9 +54,8 @@ public class StoreKitController : MonoBehaviourGUI
 	{
 		if( _products != null && _products.Count > 0 )
 		{
-			var product = _products[1];
-			Debug.Log( "preparing to purchase product: " + product.productIdentifier );
-			StoreKitBinding.purchaseProduct( product.productIdentifier, 1 );
+			Debug.Log( "preparing to purchase product: eu.machten.Bee.removeads" );
+			StoreKitBinding.purchaseProduct( "eu.machten.Bee.removeads", 1 );
 			return true;
 		}
 		else
@@ -71,9 +69,8 @@ public class StoreKitController : MonoBehaviourGUI
 	{
 		if( _products != null && _products.Count > 0 )
 		{
-			var product = _products[2];
-			Debug.Log( "preparing to purchase product: " + product.productIdentifier );
-			StoreKitBinding.purchaseProduct( product.productIdentifier, 1 );
+			Debug.Log( "preparing to purchase product: eu.machten.Bee.10extralives" );
+			StoreKitBinding.purchaseProduct( "eu.machten.Bee.10extralives", 1 );
 			return true;
 		}
 		else
